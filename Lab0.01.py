@@ -44,7 +44,7 @@ color3.r = 255
 color3.g = 55
 color3.b = 62
 
-# add color, 
+# add color, adds new rgb to color
 def add_color(color_a, color_b):
     # intantiate a new color
     new_color = Color
@@ -54,14 +54,23 @@ def add_color(color_a, color_b):
     if new_color.r > 255:
         new_color.r = 255
 
-    # assign red for new color object
-    new_color.r = color_a.r + color_b.r
+    # assign green for new color object
+    new_color.g = color_a.g + color_b.g
     if new_color.r > 255:
         new_color.r = 255
     
+    # assign blue for new color object
+    new_color.b = color_a.b + color_b.b
+    if new_color.r > 255:
+        new_color.r = 255
 
     return new_color
 
+# making three new colors
 color4 = add_color(color1, color2)
+color5 = add_color(color2, color3)
+color6 = add_color(color1, color3)
 
-print(f"Color 4's red attribute is {color4.r}.")
+print(f"Color 4's rgb attributes are ({color4.r}, {color4.g}, {color4.b}). \n")
+print(f"Color 5's rgb attributes are ({color5.r}, {color5.g}, {color5.b}). \n")
+print(f"Color 6's rgb attributes are ({color6.r}, {color6.g}, {color6.b}).")
