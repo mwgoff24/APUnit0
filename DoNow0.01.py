@@ -57,7 +57,7 @@ for pet in my_pets:
 
 print("\n")
 
-class Cat():
+class Cat(): 
     def __init__(self, name):
         self.attribute = 'pet'
         self.species = 'cat'
