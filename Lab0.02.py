@@ -28,5 +28,27 @@ and the food attributes.
 
 Test your function with your list of pets.
 '''
+# class Pet, instantiates pet objects
 class Pet():
-    pass
+    # attributes added
+    def __init__(self, animal, color, food, noise, name):
+        self.animal = animal
+        self.color = color
+        self.food = food
+        self.noise = noise
+        self.name = name
+
+# pet print, prints pet name and food attributes from a pet list
+def pet_print(pet_list):
+    for pet in pet_list:
+        print(f"{pet.name} is a {pet.color} {pet.animal} that goes {pet.noise} and eats {pet.food}.")
+
+# variables defined with instances from Pet class for list readability
+my_pet1 = Pet('dog', 'spotted', 'kibbles', 'woof', 'Scooby Doo')
+my_pet2 = Pet('cat', 'tabby', 'tuna', 'meow', 'Fluffy')
+my_pet3 = Pet('fish', 'gold', 'fish flakes', 'splash', 'Bubbles')
+
+# list containing pets and their attributes
+my_pets = [my_pet1, my_pet2, my_pet3]
+
+pet_print(my_pets)
