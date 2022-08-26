@@ -53,7 +53,7 @@ kanga_2 = Kangaroo("Roo")
 kanga_1.put_in_pouch(kanga_2)
 kanga_2.put_in_pouch("apple")
 
-print(kanga_1.pouch_contents)
+# print(kanga_1.pouch_contents)
 
 '''
 Extra Credit
@@ -75,17 +75,41 @@ Rules:
 # class Pet, instantiates pet objects
 class Pet():
     # attributes added
-    def __init__(self, animal, color, food, noise, name):
-        self.animal = animal
+    def __init__(self, color, name):
         self.color = color
-        self.food = food
-        self.noise = noise
         self.name = name
 
-    def is_friend(self, pet2):
-        self.pet2 = pet2
-        if isinstance(pet2, str):
-            return True
+class Dog(Pet):
+    animal = 'dog'
+    food = 'kibbles'
+    noise = 'woof'
+
+class Cat(Pet):
+    animal = 'cat'
+    food = 'tuna'
+    noise = 'meow'
+
+def is_friend(self, other):
+    # dog and dog
+    if isinstance(self, Dog) and isinstance(other, Dog):
+        return f"{self.name} and {other.name} are friends."
+
+    # dog and cat
+    elif isinstance(self, Dog) and isinstance(other, Cat):
+        return f"{self.name} and {other.name} are friends."
+
+    # cat and dog
+    elif isinstance(self, Cat) and isinstance(other, Dog):
+        return f"{self.name} and {other.name} are NOT friends."
+
+    # cat and cat
+    elif isinstance(self, Cat) and isinstance(other, Cat):
+        return f"{self.name} and {other.name} are NOT friends."
+
+    # other animals
+    else:
+        return f"{self.name} and {other.name} are friends."
+
 
 # pet print, prints pet name and food attributes from a pet list
 def pet_print(pet_list):
@@ -93,13 +117,14 @@ def pet_print(pet_list):
         print(f"{pet.name} is a {pet.color} {pet.animal} that goes {pet.noise} and eats {pet.food}.")
 
 # variables defined with instances from Pet class for list readability
-my_pet1 = Pet('dog', 'spotted', 'kibbles', 'woof', 'Scooby Doo')
-my_pet2 = Pet('cat', 'tabby', 'tuna', 'meow', 'Fluffy')
-my_pet3 = Pet('fish', 'gold', 'fish flakes', 'splash', 'Bubbles')
+my_pet1 = Dog('spotted', 'Scooby Doo')
+my_pet2 = Cat('tabby', 'Fluffy I')
+my_pet3 = Dog('white', 'Tag')
+my_pet4 = Cat('calico', 'Fluffy II')
 
 # list containing pets and their attributes
-my_pets = [my_pet1, my_pet2, my_pet3]
+my_pets = [my_pet1, my_pet2]
 
 # pet_print(my_pets)
 
-print(my_pet3.is_friend(my_pet2.animal))
+print(is_friend(my_pet2, my_pet1))
