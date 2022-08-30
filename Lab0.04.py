@@ -48,6 +48,7 @@ class Pokemon():
         self.name = name
 
 
+# three child classes of pokemon
 class Water(Pokemon):
     type = 'water'
     growl = 'Splish Splish'
@@ -62,7 +63,7 @@ class Grass(Pokemon):
     type = 'grass'
     growl = 'Cheep Cheep'
 
-
+# attack, compares two instances and shows if an attack is more or less effective
 def attack(self, other):
     # water to fire
     if isinstance(self, Water) and isinstance(other, Fire):
@@ -89,11 +90,12 @@ def attack(self, other):
         print(f"{self.name}'s attack is less effective against {other.name}.")
 
 
-
+# define pokemon variables
 my_pokemon1 = Water('Squirtle')
 my_pokemon2 = Fire('Charizard')
 my_pokemon3 = Grass('Weedy')
 
+# functions tested
 attack(my_pokemon1, my_pokemon2)
 
 attack(my_pokemon1, my_pokemon3)
