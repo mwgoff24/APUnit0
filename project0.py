@@ -63,20 +63,37 @@ class User:
     def heal(self):
         self.current_pokemon
 
+# prints available choices for player's pokemon
     def print_choices(self, poke_list):
-        print(f"{self.name}, Here are your available pokemon:")
+        print(f"{self.name}, Here are your available pokemon: \n")
         num = 1
-        for item in user_poke_list:
+        for item in poke_list:
             print(f"{item}, {num}")
             num += 1
 
+# populates player's collection of pokemon to fight with
     def poke_choices(self, poke_list):
-        poke_choice = int(input(f"Select a pokemon {self.name}. ")) - 1
+        poke_choice = int(input(f"\nSelect a pokemon {self.name}. ")) - 1
         player.pokemon.append(poke_list[poke_choice])
         user_poke_list.remove(poke_list[poke_choice])
+        player.print_choices(poke_list)
+
+# used for debugging purposes
+    def print_personal(self, poke_list):
+        for item in poke_list:
+            print(item)
+
+    def set_current_pokemon(self, poke_list):
+        current = int(input("Which of your pokemon would you like to use? ")) - 1
+        self.current = poke_list[current]
+
 
 class Computer(User):
-    pass
+    def computer_choices(self, poke_list):
+        new_pokemon = random.randint(0, int(len(poke_list))-1)
+        computer.pokemon.append(poke_list[new_pokemon])
+        computer_poke_list.remove(poke_list[new_pokemon])
+
 
 
 
@@ -105,8 +122,17 @@ computer = Computer(computer_name)
 
 # player chooses pokemon
 player.print_choices(user_poke_list)
-player.poke_choices(user_poke_list)
 
+while len(player.pokemon) < 3:
+    player.poke_choices(user_poke_list)
 
-print(player.pokemon)
-print(user_poke_list)
+# computer chooses pokemon
+while len(computer.pokemon) < 3:
+    computer.computer_choices(computer_poke_list)
+
+# game tells player what pokemon the computer chose
+print(f"\n{computer.name} has now chosen their pokemon:")
+computer.print_personal(computer.pokemon)
+
+while True:
+    pass
