@@ -63,10 +63,14 @@ class User:
         self.pokemon = []
         self.current_pokemon = None
 
-# switches pokemon to another
+# switches current pokemon
     def switch(self):
-        self.new_pokemon = input("Which of your pokemon would you like to switch to? ")
-        self.current_pokemon = self.new_pokemon
+        self.print_choices(self.pokemon)
+        new_pokemon = int(input("Which of your pokemon would you like to switch to? "))-1
+        self.pokemon.append(self.current_pokemon)
+        self.current_pokemon = self.pokemon[new_pokemon]
+        self.pokemon.remove(self.current_pokemon)
+        print(f"{player.name} switched to {self.current_pokemon}!")
 
 # attacks the computer's pokemon
     def attack(self, target, attack_name):
@@ -86,35 +90,41 @@ class User:
 
 # populates player's collection of pokemon to fight with
     def poke_choices(self, poke_list):
-        poke_choice = int(input(f"\nSelect a pokemon {self.name}. ")) - 1
-        player.pokemon.append(poke_list[poke_choice])
-        user_poke_list.remove(poke_list[poke_choice])
         player.print_choices(poke_list)
+        poke_choice = int(input(f"\nSelect a pokemon {self.name}. "))-1
+        self.pokemon.append(poke_list[poke_choice])
+        user_poke_list.remove(poke_list[poke_choice])
+
 
 # used for debugging purposes
     def print_current(self, poke_list):
         for item in poke_list:
-            print(item)
+            print(item.name)
 
 # sets a pokemon chosen as first to fight with
     def set_current_pokemon(self, poke_list):
         player.print_choices(poke_list)
         current = int(input("Which of your pokemon would you like to use? ")) - 1
         self.current_pokemon = poke_list[current]
-        poke_list.remove(self.current_pokemon)
+        self.pokemon.remove(self.current_pokemon)
+        print(f"{self.name} is using {self.current_pokemon.name} as their current!")
 
 
-
+# subclass of User
 class Computer(User):
 # same as User's poke_choices but implemented for computer
     def computer_choices(self, poke_list):
         new_pokemon = random.randint(0, int(len(poke_list))-1)
         computer.pokemon.append(poke_list[new_pokemon])
         computer_poke_list.remove(poke_list[new_pokemon])
+        print(f"{self.name} has chosen {poke_list[new_pokemon].name}!")
 
 # same as User set_current_pokemon but implemented for computer
     def computer_current(self, poke_list):
-        computer.current = random.randint(0, int(len(poke_list))-1)
+        current_poke = random.randint(0, int(len(poke_list))-1)
+        self.current_pokemon = poke_list[current_poke]
+        self.pokemon.remove(self.current_pokemon)
+        print(f"{self.name} is using {self.current_pokemon.name} as their current!")
 
 
 w_poke1 = Water('Squirtle', 80, 20)
@@ -153,21 +163,22 @@ player.print_choices(user_poke_list)
 
 while len(player.pokemon) < 3:
     player.poke_choices(user_poke_list)
+print("\n")
+print(f"{player.name}'s pokemon are {player.pokemon[0].name}, {player.pokemon[1].name}, and {player.pokemon[2].name}!")
 
 # computer chooses pokemon
 while len(computer.pokemon) < 3:
     computer.computer_choices(computer_poke_list)
-
-# game tells player what pokemon the computer chose
-print(f"\n{computer.name} has now chosen their pokemon:")
-computer.print_current(computer.pokemon)
 print("\n")
+print(f"{computer.name}'s pokemon are {computer.pokemon[0].name}, {computer.pokemon[1].name}, and {computer.pokemon[2].name}!")
 
 # set player's current pokemon
 player.set_current_pokemon(player.pokemon)
+print("\n")
 
 # set computer's current pokemon
 computer.computer_current(computer.pokemon)
+print("\n")
 
 # game loop
 while True:
@@ -177,7 +188,7 @@ while True:
     turn = player1
 
     # asks player what move they want to do
-    move = input(f"{turn.name}, what would you like to do? s for switch, a for attack, or h for heal. ")
+    move = input(f"Go, {turn.name}! Type either s for switch, a for attack, or h for heal. ")
     if move == 's':
         player.switch()
     elif move == 'a':
