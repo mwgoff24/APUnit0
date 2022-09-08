@@ -1,6 +1,7 @@
 # Pokemon Project
 # Martin Goff
 
+from pickletools import markobject
 import random
 
 # main pokemon class
@@ -66,15 +67,18 @@ class User:
 # switches current pokemon
     def switch(self):
         self.print_choices(self.pokemon)
+        # asks user what to switch to
         new_pokemon = int(input("Which of your pokemon would you like to switch to? "))-1
+        # adds current pokemon back to personal list, makes the chosen pokemon the new one, removes new current from list
         self.pokemon.append(self.current_pokemon)
         self.current_pokemon = self.pokemon[new_pokemon]
         self.pokemon.remove(self.current_pokemon)
         print(f"{player.name} switched to {self.current_pokemon}!")
 
 # attacks the computer's pokemon
-    def attack(self, target, attack_name):
-        pass
+    def attack(self):
+        print(f"These are your attacks.\n{self.current_pokemon.attacks}\nThe left number is HP dealt, the right is the accuracy. \n")
+        attack = input(f"Which attack would you like to use, {self.name}? ")
 
 # heals current pokemon
     def heal(self):
@@ -93,7 +97,7 @@ class User:
         player.print_choices(poke_list)
         poke_choice = int(input(f"\nSelect a pokemon {self.name}. "))-1
         self.pokemon.append(poke_list[poke_choice])
-        user_poke_list.remove(poke_list[poke_choice])
+        main_poke_list.remove(poke_list[poke_choice])
 
 
 # used for debugging purposes
@@ -104,10 +108,17 @@ class User:
 # sets a pokemon chosen as first to fight with
     def set_current_pokemon(self, poke_list):
         player.print_choices(poke_list)
-        current = int(input("Which of your pokemon would you like to use? ")) - 1
+        current = int(input("Which of your pokemon would you like to use? "))-1
         self.current_pokemon = poke_list[current]
         self.pokemon.remove(self.current_pokemon)
         print(f"{self.name} is using {self.current_pokemon.name} as their current!")
+
+# checks health of each pokemon
+    def check_health(self, other, poke_list):
+        if len(poke_list) == 0:
+            print(f"{other.name} has won this battle.")
+            return False
+
 
 
 # subclass of User
@@ -116,8 +127,7 @@ class Computer(User):
     def computer_choices(self, poke_list):
         new_pokemon = random.randint(0, int(len(poke_list))-1)
         computer.pokemon.append(poke_list[new_pokemon])
-        computer_poke_list.remove(poke_list[new_pokemon])
-        print(f"{self.name} has chosen {poke_list[new_pokemon].name}!")
+        main_poke_list.remove(poke_list[new_pokemon])
 
 # same as User set_current_pokemon but implemented for computer
     def computer_current(self, poke_list):
@@ -137,8 +147,7 @@ g_poke1 = Grass('Bulbasoar', 60, 40)
 g_poke2 = Grass('Bellsprout', 40, 60)
 g_poke3 = Grass('Oddish', 50, 50)
 
-user_poke_list = [w_poke1, w_poke2, w_poke3, f_poke1, f_poke2, f_poke3, g_poke1, g_poke2, g_poke3]
-computer_poke_list = [w_poke1, w_poke2, w_poke3, f_poke1, f_poke2, f_poke3, g_poke1, g_poke2, g_poke3]
+main_poke_list = [w_poke1, w_poke2, w_poke3, f_poke1, f_poke2, f_poke3, g_poke1, g_poke2, g_poke3]
 
 
 
@@ -159,16 +168,16 @@ player = User(user_name)
 computer = Computer(computer_name)
 
 # player chooses pokemon
-player.print_choices(user_poke_list)
+player.print_choices(main_poke_list)
 
 while len(player.pokemon) < 3:
-    player.poke_choices(user_poke_list)
+    player.poke_choices(main_poke_list)
 print("\n")
 print(f"{player.name}'s pokemon are {player.pokemon[0].name}, {player.pokemon[1].name}, and {player.pokemon[2].name}!")
 
 # computer chooses pokemon
 while len(computer.pokemon) < 3:
-    computer.computer_choices(computer_poke_list)
+    computer.computer_choices(main_poke_list)
 print("\n")
 print(f"{computer.name}'s pokemon are {computer.pokemon[0].name}, {computer.pokemon[1].name}, and {computer.pokemon[2].name}!")
 
@@ -180,13 +189,19 @@ print("\n")
 computer.computer_current(computer.pokemon)
 print("\n")
 
+# defining some variables
+player1 = player
+player2 = computer
+
+
+
 # game loop
 while True:
-    # defining some variables
-    player1 = player
-    player2 = computer
+    # gives turn to player 1
     turn = player1
-
+    # checks both pokemon lists
+    player.check_health(computer, player.pokemon)
+    computer.check_health(player, computer.pokemon)
     # asks player what move they want to do
     move = input(f"Go, {turn.name}! Type either s for switch, a for attack, or h for heal. ")
     if move == 's':
@@ -200,3 +215,11 @@ while True:
         move
     # turn moved to computer
     turn = player2
+    print(f"Go, {turn.name}!")
+    c_move = random.randint(1, 6)
+    if c_move == 1:
+        computer.switch()
+    elif c_move == 2:
+        computer.heal()
+    else:
+        computer.attack
