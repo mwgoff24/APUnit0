@@ -1,7 +1,6 @@
 # Pokemon Project
 # Martin Goff
 
-from pickletools import markobject
 import random
 
 # main pokemon class
@@ -73,7 +72,7 @@ class User:
         self.pokemon.append(self.current_pokemon)
         self.current_pokemon = self.pokemon[new_pokemon]
         self.pokemon.remove(self.current_pokemon)
-        print(f"{player.name} switched to {self.current_pokemon}!")
+        print(f"{self.name} switched to {self.current_pokemon.name}!")
 
 # attacks the computer's pokemon
     def attack(self):
@@ -82,7 +81,8 @@ class User:
 
 # heals current pokemon
     def heal(self):
-        self.current_pokemon
+        self.current_pokemon.hp += 20
+        print(f"{self.name} has healed {self.current_pokemon.name}!\n")
 
 # prints available choices for player's pokemon
     def print_choices(self, poke_list):
@@ -114,27 +114,41 @@ class User:
         print(f"{self.name} is using {self.current_pokemon.name} as their current!")
 
 # checks health of each pokemon
-    def check_health(self, other, poke_list):
-        if len(poke_list) == 0:
-            print(f"{other.name} has won this battle.")
+    def check_health(self, other):
+        print(f"{self.name}'s pokemon has {self.current_pokemon.hp} hp. {other.name}'s pokemon has {other.current_pokemon.hp} hp.")
+        if len(self.pokemon) == 0 or len(other.pokemon) == 0:
+            print(f"{other.name} has won this battle. Thank you for playing {self.name} and {other.name}.")
             return False
 
 
 
 # subclass of User
 class Computer(User):
-# same as User's poke_choices but implemented for computer
+# all methods are User methods just implemented for computer
+# same as User's poke_choices
     def computer_choices(self, poke_list):
         new_pokemon = random.randint(0, int(len(poke_list))-1)
         computer.pokemon.append(poke_list[new_pokemon])
         main_poke_list.remove(poke_list[new_pokemon])
 
-# same as User set_current_pokemon but implemented for computer
+# same as User set_current_pokemon
     def computer_current(self, poke_list):
         current_poke = random.randint(0, int(len(poke_list))-1)
         self.current_pokemon = poke_list[current_poke]
         self.pokemon.remove(self.current_pokemon)
         print(f"{self.name} is using {self.current_pokemon.name} as their current!")
+
+# same as User switch
+    def computer_switch(self, poke_list):
+        new_pokemon = random.randint(0, int(len(poke_list))-1)
+        self.pokemon.append(self.current_pokemon)
+        self.current_pokemon = self.pokemon[new_pokemon]
+        self.pokemon.remove(self.current_pokemon)
+        print(f"{self.name} switched to {self.current_pokemon.name}!")
+
+# same as User attack
+    def computer_attack(self):
+        pass
 
 
 w_poke1 = Water('Squirtle', 80, 20)
@@ -168,8 +182,6 @@ player = User(user_name)
 computer = Computer(computer_name)
 
 # player chooses pokemon
-player.print_choices(main_poke_list)
-
 while len(player.pokemon) < 3:
     player.poke_choices(main_poke_list)
 print("\n")
@@ -200,8 +212,7 @@ while True:
     # gives turn to player 1
     turn = player1
     # checks both pokemon lists
-    player.check_health(computer, player.pokemon)
-    computer.check_health(player, computer.pokemon)
+    player.check_health(computer)
     # asks player what move they want to do
     move = input(f"Go, {turn.name}! Type either s for switch, a for attack, or h for heal. ")
     if move == 's':
@@ -216,10 +227,12 @@ while True:
     # turn moved to computer
     turn = player2
     print(f"Go, {turn.name}!")
+    advance = input("Press ENTER.")
     c_move = random.randint(1, 6)
+    print(c_move)
     if c_move == 1:
-        computer.switch()
+        computer.computer_switch(computer.pokemon)
     elif c_move == 2:
         computer.heal()
     else:
-        computer.attack
+        computer.computer_attack()
