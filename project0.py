@@ -84,13 +84,25 @@ class User:
         print(f"{self.name} switched to {self.current_pokemon.name}!")
 
 # attacks the computer's pokemon
-    def attack(self, other):
+    def player_attack(self, other):
+        # displays the available attacks
         print(f"These are your attacks.\n{self.current_pokemon.attacks}\nThe left number is HP dealt, the right is the accuracy. \n")
+        # asks which attack player would like to use
         attack = input(f"Which attack would you like to use, {self.name}? Type the full name of the attack. ")
+        # instantiates the attack from the dictionary and prints its stats
         chosen_attack = self.current_pokemon.attacks.get(attack)
         print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy")
-
-        self.attack(chosen_attack, other)
+        # sets variables as a random attack power and random number to determine success
+        attack_power = random.randint(int(chosen_attack[0]) - 20, int(chosen_attack[0]))
+        attack_success = random.randint(0, 100)
+        print(f"targets hp before attack: {other.current_pokemon.hp}") # delete when code fully works
+        # if number chosen is greater than accuracy of attack, enemy dodges attack 
+        if attack_success > int(chosen_attack[1]):
+            print(f"{other.current_pokemon.name} dodged your attack!")
+        # else is when number chosen is within range 0 to accuracy of attack, enemy loses chosen amt hp
+        else:
+            other.current_pokemon.hp -= attack_power
+            print(f"{other.current_pokemon.name} just lost {attack_power} hp!")
 
     # runs if attack put computer's pokemon below 0 hp
         if other.current_pokemon.hp < 0:
@@ -100,6 +112,7 @@ class User:
             print(f"{other.name} just lost {other.current_pokemon.name}!")
             other.pokemon.append(other.current_pokemon)
             other.pokemon.remove(other.current_pokemon)
+            print(other.pokemon)
             if len(computer.pokemon) > 0:
                 computer.computer_switch(computer.pokemon)
             else:
@@ -246,7 +259,7 @@ while True:
     if move == 's':
         player.switch()
     elif move == 'a':
-        player.attack(computer)
+        player.player_attack(computer)
     elif move == 'h':
         player.heal()
     else:
