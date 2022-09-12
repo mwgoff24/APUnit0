@@ -13,6 +13,15 @@ class Pokemon():
     def __str__(self):
         return f"{self.name}: {self.hp} HP, {self.ap} AP"
 
+    def attack(self, attack, other):
+        attack_power = random.randint(attack[0] - 20, attack[0])
+        attack_success = random.randint(0, attack[1])
+        print(f"targets hp before attack: {other.current_pokemon.hp}")
+        if attack_success > attack[1]:
+            print(f"{other.current_pokemon.name} dodged your attack!")
+        else:
+            other.current_pokemon.hp -= attack_power
+
 
 
 # three child classes of pokemon
@@ -75,9 +84,28 @@ class User:
         print(f"{self.name} switched to {self.current_pokemon.name}!")
 
 # attacks the computer's pokemon
-    def attack(self):
+    def attack(self, other):
         print(f"These are your attacks.\n{self.current_pokemon.attacks}\nThe left number is HP dealt, the right is the accuracy. \n")
-        attack = input(f"Which attack would you like to use, {self.name}? ")
+        attack = input(f"Which attack would you like to use, {self.name}? Type the full name of the attack. ")
+        chosen_attack = self.current_pokemon.attacks.get(attack)
+        print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy")
+
+        self.attack(chosen_attack, other)
+
+    # runs if attack put computer's pokemon below 0 hp
+        if other.current_pokemon.hp < 0:
+            other.current_pokemon.hp = 0
+    # checks if computer's health is at 0, then checks if computer has available pokemon to switch to
+        if other.current_pokemon.hp == 0:
+            print(f"{other.name} just lost {other.current_pokemon.name}!")
+            other.pokemon.append(other.current_pokemon)
+            other.pokemon.remove(other.current_pokemon)
+            if len(computer.pokemon) > 0:
+                computer.computer_switch(computer.pokemon)
+            else:
+                player.check_health(computer)
+            
+
 
 # heals current pokemon
     def heal(self):
@@ -218,12 +246,13 @@ while True:
     if move == 's':
         player.switch()
     elif move == 'a':
-        player.attack()
+        player.attack(computer)
     elif move == 'h':
         player.heal()
     else:
         print("That is not an available option.")
         move
+    computer.check_health(player)
     # turn moved to computer
     turn = player2
     print(f"Go, {turn.name}!")
