@@ -9,18 +9,25 @@ class Pokemon():
         self.name = name
         self.hp = hp
         self.ap = ap
+        self.MAX_HEALTH = hp
 
     def __str__(self):
         return f"{self.name}: {self.hp} HP, {self.ap} AP"
 
     def attack(self, attack, other):
-        attack_power = random.randint(attack[0] - 20, attack[0])
-        attack_success = random.randint(0, attack[1])
-        print(f"targets hp before attack: {other.current_pokemon.hp}")
-        if attack_success > attack[1]:
+        # sets variables as a random attack power and random number to determine success
+        attack_power = random.randint(int(attack[0]) - 20, int(attack[0]))
+        attack_success = random.randint(0, 100)
+        print(f"targets hp before attack: {other.current_pokemon.hp}") # delete when code fully works
+        # if number chosen is greater than accuracy of attack, enemy dodges attack 
+        if attack_success > int(attack[1]):
             print(f"{other.current_pokemon.name} dodged your attack!")
+        # else is when number chosen is within range 0 to accuracy of attack, enemy loses chosen amt hp
         else:
             other.current_pokemon.hp -= attack_power
+            print(f"{other.current_pokemon.name} just lost {attack_power} hp!")
+            if other.current_pokemon.hp <= 0:
+                player.poke_death(other)
 
 
 
@@ -94,31 +101,19 @@ class User:
         # instantiates the attack from the dictionary and prints its stats
         chosen_attack = self.current_pokemon.attacks.get(attack)
         print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy")
-        # sets variables as a random attack power and random number to determine success
-        attack_power = random.randint(int(chosen_attack[0]) - 20, int(chosen_attack[0]))
-        attack_success = random.randint(0, 100)
-        print(f"targets hp before attack: {other.current_pokemon.hp}") # delete when code fully works
-        # if number chosen is greater than accuracy of attack, enemy dodges attack 
-        if attack_success > int(chosen_attack[1]):
-            print(f"{other.current_pokemon.name} dodged your attack!")
-        # else is when number chosen is within range 0 to accuracy of attack, enemy loses chosen amt hp
-        else:
-            other.current_pokemon.hp -= attack_power
-            print(f"{other.current_pokemon.name} just lost {attack_power} hp!")
+        self.current_pokemon.attack(chosen_attack, other)
 
-
+    def poke_death(self, other):
     # runs if attack put computer's pokemon below 0 hp
         if other.current_pokemon.hp < 0:
             other.current_pokemon.hp = 0
     # checks if computer's health is at 0, then checks if computer has available pokemon to switch to
-        if other.current_pokemon.hp == 0:
             print(f"{other.name} just lost {other.current_pokemon.name}!")
             if len(other.pokemon) > 0:
                 other.computer_switch(other.pokemon)
                 print(other.pokemon)
             else:
                 other.current_pokemon = None
-                self.check_health(other)
                 
 
 
@@ -156,14 +151,15 @@ class User:
         self.pokemon.remove(self.current_pokemon)
         print(f"{self.name} is using {self.current_pokemon.name} as their current!")
 
-# checks health of each pokemon
+# checks health of each pokemon and ends game if a player lost all their pokemon
     def check_health(self, other):
+        global gameplay
         if len(self.pokemon) == 0 and self.current_pokemon == None:
             print(f"{other.name} has won this battle. Thank you for playing {self.name} and {other.name}.")
-            return False
+            gameplay = False
         elif len(other.pokemon) == 0 and other.current_pokemon == None:
             print(f"{self.name} has won this battle. Thank you for playing {self.name} and {other.name}.")
-            return False
+            gameplay = False
         else:
             print(f"{self.name}'s pokemon has {self.current_pokemon.hp} hp. {other.name}'s pokemon has {other.current_pokemon.hp} hp.")
 
@@ -191,11 +187,20 @@ class Computer(User):
             pass
         elif len(poke_list) == 0 and self.current_pokemon.hp == 0:
             self.current_pokemon = None
-        else:
+        elif self.current_pokemon.hp == 0:
+            self.current_pokemon = None
             new_pokemon = random.randint(0, int(len(poke_list))-1)
             self.current_pokemon = self.pokemon[new_pokemon]
             self.pokemon.remove(self.pokemon[new_pokemon])
             print(f"{self.name} switched to {self.current_pokemon.name}!")
+            print(self.pokemon)
+        else:
+            new_pokemon = random.randint(0, int(len(poke_list))-1)
+            self.pokemon.append(self.current_pokemon)
+            self.current_pokemon = self.pokemon[new_pokemon]
+            self.pokemon.remove(self.pokemon[new_pokemon])
+            print(f"{self.name} switched to {self.current_pokemon.name}!")
+            print(self.pokemon)
         
 
 # same as User attack
@@ -256,14 +261,16 @@ print("\n")
 # defining some variables
 player1 = player
 player2 = computer
-
+gameplay = True
 
 # game loop
-while True:
+while gameplay:
     # gives turn to player 1
     turn = player1
     # checks both pokemon lists
     player.check_health(computer)
+    if gameplay == False:
+        break
     # asks player what move they want to do
     move = input(f"Go, {turn.name}! Type either s for switch, a for attack, or h for heal. ")
     if move == 's':
@@ -275,7 +282,9 @@ while True:
     else:
         print("That is not an available option.")
         move
-    computer.check_health(player)
+    player.check_health(computer)
+    if gameplay == False:
+        break
     # turn moved to computer
     turn = player2
     print(f"Go, {turn.name}!")
