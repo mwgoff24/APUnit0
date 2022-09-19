@@ -82,8 +82,10 @@ class User:
 # switches current pokemon
     def switch(self, poke_list):
         if len(poke_list) == 0:
-            print("You can't switch! Your current pokemon is your only one! Pick another move!")
-            move
+            print("You can't switch! Now you lost your turn!")
+        elif self.current_pokemon.hp == 0:
+            self.pokemon.append(self.current_pokemon)
+            self.pokemon.remove(self.current_pokemon)
         self.print_choices(self.pokemon)
         # asks user what to switch to
         new_pokemon = int(input("Which of your pokemon would you like to switch to? "))-1
@@ -100,18 +102,22 @@ class User:
         attack = input(f"Which attack would you like to use, {self.name}? Type the full name of the attack. ")
         # instantiates the attack from the dictionary and prints its stats
         chosen_attack = self.current_pokemon.attacks.get(attack)
+        print(type(chosen_attack))
         print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy")
         self.current_pokemon.attack(chosen_attack, other)
 
     def poke_death(self, other):
     # runs if attack put computer's pokemon below 0 hp
-        if other.current_pokemon.hp < 0:
+        if other.current_pokemon.hp <= 0:
             other.current_pokemon.hp = 0
     # checks if computer's health is at 0, then checks if computer has available pokemon to switch to
             print(f"{other.name} just lost {other.current_pokemon.name}!")
             if len(other.pokemon) > 0:
-                other.computer_switch(other.pokemon)
-                print(other.pokemon)
+                if turn == player1:
+                    other.computer_switch(other.pokemon)
+                    print(other.pokemon)
+                else:
+                    self.switch(self.pokemon)
             else:
                 other.current_pokemon = None
                 
@@ -184,7 +190,7 @@ class Computer(User):
 # same as User switch
     def computer_switch(self, poke_list):
         if len(poke_list) == 0:
-            pass
+            print(f"{self.name} tried to switch but they have no available pokemon! {self.name} just lost their turn!\n")
         elif len(poke_list) == 0 and self.current_pokemon.hp == 0:
             self.current_pokemon = None
         elif self.current_pokemon.hp == 0:
@@ -204,8 +210,17 @@ class Computer(User):
         
 
 # same as User attack
-    def computer_attack(self):
-        pass
+    def computer_attack(self, other):
+        attack_names = []
+        attack_values = []
+        for item in list(self.current_pokemon.attacks.keys()):
+            attack_names.append(item)
+        for item in list(self.current_pokemon.attacks.values()):
+            attack_values.append(item)
+        chosen_attack_val = random.randint(0, len(attack_names)-1)
+        chosen_attack = attack_values[chosen_attack_val]
+        self.current_pokemon.attack(chosen_attack, other)
+            
 
 
 w_poke1 = Water('Squirtle', 80, 20)
@@ -296,4 +311,4 @@ while gameplay:
     elif c_move == 2:
         computer.heal()
     else:
-        computer.computer_attack()
+        computer.computer_attack(player)
