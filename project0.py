@@ -27,7 +27,7 @@ class Pokemon():
             other.current_pokemon.hp -= attack_power
             print(f"{other.current_pokemon.name} just lost {attack_power} hp!")
             if other.current_pokemon.hp <= 0:
-                player.poke_death(other)
+                other.poke_death(other)
 
 
 
@@ -82,7 +82,7 @@ class User:
 # switches current pokemon
     def switch(self, poke_list):
         if len(poke_list) == 0:
-            print("You can't switch! Now you lost your turn!")
+            print("You just wasted a turn! Type in 0 or 1 to proceed.")
         elif self.current_pokemon.hp == 0:
             self.pokemon.append(self.current_pokemon)
             self.pokemon.remove(self.current_pokemon)
@@ -102,8 +102,8 @@ class User:
         attack = input(f"Which attack would you like to use, {self.name}? Type the full name of the attack. ")
         # instantiates the attack from the dictionary and prints its stats
         chosen_attack = self.current_pokemon.attacks.get(attack)
-        print(type(chosen_attack))
-        print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy")
+        print(type(chosen_attack)) # delete this line when code fully works
+        print(f"You chose {attack} attack which has {chosen_attack[0]} attack power, and {chosen_attack[1]} accuracy") # delete this line when code fully works
         self.current_pokemon.attack(chosen_attack, other)
 
     def poke_death(self, other):
@@ -115,18 +115,33 @@ class User:
             if len(other.pokemon) > 0:
                 if turn == player1:
                     other.computer_switch(other.pokemon)
-                    print(other.pokemon)
+                    print(other.pokemon) # delete this line when code fully works
+                    other.check_list(other.pokemon)
                 else:
                     self.switch(self.pokemon)
+                    self.check_list(self.pokemon)
             else:
                 other.current_pokemon = None
                 
-
+# checks pokemon list to see if any pokemon have 0 hp
+    def check_list(self, poke_list):
+        for item in poke_list:
+            if item.hp == 0:
+                poke_list.remove(item)
+            print(poke_list) # delete this line when code fully works
 
 # heals current pokemon
     def heal(self):
-        self.current_pokemon.hp += 20
-        print(f"{self.name} has healed {self.current_pokemon.name}!\n")
+        if self.current_pokemon.hp == self.current_pokemon.MAX_HEALTH:
+            print(f"{self.name} just wasted a turn trying to heal your pokemon with full hp!")
+        else:
+            hp_back = 20
+            self.current_pokemon.hp += hp_back
+            if self.current_pokemon.hp > self.current_pokemon.MAX_HEALTH:
+                self.current_pokemon.hp = self.current_pokemon.MAX_HEALTH
+                print(f"{self.name} has healed {self.current_pokemon.name} back to max!")
+            else:
+                print(f"{self.name} has healed {self.current_pokemon.name}!\n")
 
 # prints available choices for player's pokemon
     def print_choices(self, poke_list):
@@ -145,6 +160,7 @@ class User:
 
 
 # used for debugging purposes
+# delete this when code fully works
     def print_current(self, poke_list):
         for item in poke_list:
             print(item.name)
@@ -189,24 +205,28 @@ class Computer(User):
 
 # same as User switch
     def computer_switch(self, poke_list):
+        # used when computer tries to switch but only has one remaining pokemon
         if len(poke_list) == 0:
             print(f"{self.name} tried to switch but they have no available pokemon! {self.name} just lost their turn!\n")
+        # used after poke_death to eliminate the current pokemon when there are no remaining pokemon
         elif len(poke_list) == 0 and self.current_pokemon.hp == 0:
             self.current_pokemon = None
+        # used after poke_death to eliminate the current pokemon and switch to a new one
         elif self.current_pokemon.hp == 0:
             self.current_pokemon = None
             new_pokemon = random.randint(0, int(len(poke_list))-1)
             self.current_pokemon = self.pokemon[new_pokemon]
             self.pokemon.remove(self.pokemon[new_pokemon])
             print(f"{self.name} switched to {self.current_pokemon.name}!")
-            print(self.pokemon)
+            print(self.pokemon) # delete this line when code fully works
+        # used if computer calls method in battle
         else:
             new_pokemon = random.randint(0, int(len(poke_list))-1)
             self.pokemon.append(self.current_pokemon)
             self.current_pokemon = self.pokemon[new_pokemon]
             self.pokemon.remove(self.pokemon[new_pokemon])
             print(f"{self.name} switched to {self.current_pokemon.name}!")
-            print(self.pokemon)
+            print(self.pokemon) # delete this line when code fully works
         
 
 # same as User attack
